@@ -1,0 +1,46 @@
+html,body,#root {
+  height: 100%;
+  width: 100%;
+}
+
+#main {
+  height: 80%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+#date-time-picker-div {
+  height: 40%;
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+#find-button {
+  height: 40px;
+  width: 100px;
+}
+
+#event-availability-div {
+  height: 10%;
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#event1,#event2,#event3,#event4,#event5 {
+  height: 80%;
+  width: 15%;
+  border: 1px solid black;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
