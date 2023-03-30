@@ -1,7 +1,4 @@
-// In the solution, I am assuming that I need to show 5 time outputs wrt user time input as it was not clear to me 
-
 // Importing libraries , used material UI for creating calender, time and drop down component
-
 
 import React from "react";
 import './App.css';
@@ -72,7 +69,7 @@ function FindAvailability() {
 
   const [date, setDate] = useState(dayjs()); 
   const [time,setTime] = useState(dayjs());
-  const [duration, setDuration] = useState('');
+  const [duration, setDuration] = useState(5);
   const [onClickFind,setOnClickFind] = useState(false);
   const [slotAvailable,setSlotAvailable] = useState(isAvailableArray);
 
@@ -119,6 +116,10 @@ var userInputDayjs=dayjs(userInputDateTime);  // converting user input time into
         </LocalizationProvider>
       </div>
       <Button id='find-button' variant="contained" onClick={isAvailable}>Find</Button>
+      <br></br>
+      <br></br>
+      <br></br>
+      
 
       {onClickFind ?
       <div id='event-availability-div'>
@@ -130,8 +131,11 @@ var userInputDayjs=dayjs(userInputDateTime);  // converting user input time into
        
       </div>
       : null }
+
+      <p>*Here I made an assumption to show 5 slots near the chosen slot,as I was doubtful how many slots to show</p>
       
     </div>
+
   );
 
   function isAvailable() {
