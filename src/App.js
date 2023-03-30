@@ -1,3 +1,5 @@
+// Importing libraries , used material UI for creating calender, time and drop down component
+
 import React from "react";
 import './App.css';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -13,11 +15,13 @@ import { TimeField } from '@mui/x-date-pickers/TimeField';
 import { useState } from "react";
 import dayjs from 'dayjs';
 
+let isAvailableArray = [true,true,true,true,true]; // used for initialising slotAvailable state array
+let calcFiveTimeInputs = [-2,-1,0,1,2]; // used in map function to calculate 5 time outputs wrt user input time -> eventArray
+let eventDivIndex = [0,1,2,3,4]; // used in map function to optimize display of 5 divisions for 5 time outputs
+let eventArray =[]; // initialising eventArray to store 5 time outputs
 
-let startTime1,startTime2,startTime4,startTime5,startTime3,lastEndTime;
-let userInputArray;
-let isAvailableArray = [true,true,true,true,true];
 
+// Data given -> time slots which are not available
 let givenData = [
   {
     "start": "Wed, 03 Mar 2021 04:00:15 GMT",
@@ -53,8 +57,10 @@ let givenData = [
   }
 ]
 
-let givenDataStringify=JSON.stringify(givenData);
-let givenDataParsed = JSON.parse(givenDataStringify);
+let givenDataStringify=JSON.stringify(givenData); // converting given data into string
+let givenDataParsed = JSON.parse(givenDataStringify); // parsing string into object
+
+// creating array of objects of given data in dayjs 
 let givenDataArray=givenDataParsed.map((element,index) => {
   return {"start":dayjs(element.start),"end":dayjs(element.end)}
 })
@@ -63,24 +69,17 @@ let givenDataArray=givenDataParsed.map((element,index) => {
 
 function FindAvailability() {
 
-  const [date, setDate] = useState(dayjs());
+  const [date, setDate] = useState(dayjs()); 
   const [time,setTime] = useState(dayjs());
   const [duration, setDuration] = useState('');
-  const [startTime,setStartTime] = useState([]);
-  const [eventArray,setEventArray] = useState([])
-  const [event1,setEvent1] = useState('');
-  const [event2,setEvent2] = useState('');
-  const [event3,setEvent3] = useState('');
-  const [event4,setEvent4] = useState('');
-  const [event5,setEvent5] = useState('');
   const [onClickFind,setOnClickFind] = useState(false);
   const [slotAvailable,setSlotAvailable] = useState(isAvailableArray);
 
 
 var userInputDateTime = (date.year())+"-"+(date.month()+1)+"-"+(date.date())+" "+(time.hour())+":"+(time.minute())
-var userInputDayjs=dayjs(userInputDateTime);
+var userInputDayjs=dayjs(userInputDateTime);  // converting user input time into dayjs format 
 
-
+// user interface 
   return (
     <div id='main'>
       <h2>FIND A FREE TIME</h2>
@@ -130,39 +129,36 @@ var userInputDayjs=dayjs(userInputDateTime);
 
       {onClickFind ?
       <div id='event-availability-div'>
-        <div id='event1' style={slotAvailable[0] ? {background:'green'} : {background:'grey'}}>{event1}</div>
-        <div id='event2' style={slotAvailable[1] ? {background:'green'} : {background:'grey'}}>{event2}</div>
-        <div id='event3' style={slotAvailable[2] ? {background:'green'} : {background:'grey'}}>{event3}</div>
-        <div id='event4' style={slotAvailable[3] ? {background:'green'} : {background:'grey'}}>{event4}</div>
-        <div id='event5' style={slotAvailable[4] ? {background:'green'} : {background:'grey'}}>{event5}</div>
+       
+        {eventDivIndex.map((element,index)=> {
+        return <div id='event' style={slotAvailable[element] ? {background:'green'} : {background:'grey'}}>{eventArray[element]}</div>
+      })
+      }
+       
       </div>
       : null }
+      
     </div>
   );
 
   function isAvailable() {
-    isAvailableArray = [true,true,true,true,true];
+    isAvailableArray = [true,true,true,true,true]; //used for initialising slotAvailable state array
     setSlotAvailable(isAvailableArray);
+    
+    // calculating 5 time outputs in dayjs and storing it in userInputArray
+    var userInputArray =calcFiveTimeInputs.map((element,index)=> {
+       return {"start" : userInputDayjs.add(duration*element,'minutes'), "end" : userInputDayjs.add(duration*(element+1),'minutes')}
+    })
+    
+    // getting time in "HH:mm" from dayjs format to display in the UI
+    eventArray = userInputArray.map((element,index) => {
+      return ((element.start).format("HH:mm"));
+    })
     setOnClickFind(true);
 
-    
-    startTime3=userInputDayjs;
-    startTime4=userInputDayjs.add(duration,'minutes');
-    startTime5=startTime4.add(duration,'minutes');
-    startTime2=startTime3.subtract(duration,'minutes');
-    startTime1=startTime2.subtract(duration,'minutes');
-    lastEndTime = startTime5.add(duration,'minutes');
-  
-    
-    setEvent1(startTime1.get('hours')+':'+startTime1.get('minutes'))
-    setEvent2(startTime2.get('hours')+':'+startTime2.get('minutes'))
-    setEvent3(startTime3.get('hours')+':'+startTime3.get('minutes'))
-    setEvent4(startTime4.get('hours')+':'+startTime4.get('minutes'))
-    setEvent5(startTime5.get('hours')+':'+startTime5.get('minutes'))
+// in the for loop below each start time and end time (calculated using duration) of the user input is compared with all the given time data (occupied slots) and return if the slot is available or not.
 
-    userInputArray = [{"start":startTime1,"end":startTime2},{"start":startTime2,"end":startTime3},{"start":startTime3,"end":startTime4},{"start":startTime4,"end":startTime5},{"start":startTime5,"end":lastEndTime}]
-
-    var availableSlot;
+    var availableSlot; 
     for(var i=0;i<userInputArray.length;i++) {
         availableSlot = 'true';
       for(var j=0;j<givenDataArray.length;j++) {
