@@ -16,8 +16,6 @@ import { useState } from "react";
 import dayjs from 'dayjs';
 
 let isAvailableArray = [true,true,true,true,true]; // used for initialising slotAvailable state array
-let calcFiveTimeInputs = [-2,-1,0,1,2]; // used in map function to calculate 5 time outputs wrt user input time -> eventArray
-let eventDivIndex = [0,1,2,3,4]; // used in map function to optimize display of 5 divisions for 5 time outputs
 let eventArray =[]; // initialising eventArray to store 5 time outputs
 
 
@@ -108,18 +106,10 @@ var userInputDayjs=dayjs(userInputDateTime);  // converting user input time into
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
               >
-                <MenuItem value={5}>5 minutes</MenuItem>
-                <MenuItem value={10}>10 minutes</MenuItem>
-                <MenuItem value={15}>15 minutes</MenuItem>
-                <MenuItem value={20}>20 minutes</MenuItem>
-                <MenuItem value={25}>25 minutes</MenuItem>
-                <MenuItem value={30}>30 minutes</MenuItem>
-                <MenuItem value={35}>35 minutes</MenuItem>
-                <MenuItem value={40}>40 minutes</MenuItem>
-                <MenuItem value={45}>45 minutes</MenuItem>
-                <MenuItem value={50}>50 minutes</MenuItem>
-                <MenuItem value={55}>55 minutes</MenuItem>
-                <MenuItem value={60}>60 minutes</MenuItem>
+              {[5,10,15,20,25,30,35,40,45,50,55,60].map((element,index) => {
+                return <MenuItem value={element}>{element} minutes</MenuItem>
+              })
+              }
               </Select>
             </FormControl>
           </Box>
@@ -130,7 +120,7 @@ var userInputDayjs=dayjs(userInputDateTime);  // converting user input time into
       {onClickFind ?
       <div id='event-availability-div'>
        
-        {eventDivIndex.map((element,index)=> {
+        {[0,1,2,3,4].map((element,index)=> {
         return <div id='event' style={slotAvailable[element] ? {background:'green'} : {background:'grey'}}>{eventArray[element]}</div>
       })
       }
@@ -146,7 +136,7 @@ var userInputDayjs=dayjs(userInputDateTime);  // converting user input time into
     setSlotAvailable(isAvailableArray);
     
     // calculating 5 time outputs in dayjs and storing it in userInputArray
-    var userInputArray =calcFiveTimeInputs.map((element,index)=> {
+    var userInputArray =[-2,-1,0,1,2].map((element,index)=> {
        return {"start" : userInputDayjs.add(duration*element,'minutes'), "end" : userInputDayjs.add(duration*(element+1),'minutes')}
     })
     
@@ -160,16 +150,16 @@ var userInputDayjs=dayjs(userInputDateTime);  // converting user input time into
 
     var availableSlot; 
     for(var i=0;i<userInputArray.length;i++) {
-        availableSlot = 'true';
+        availableSlot = true;
       for(var j=0;j<givenDataArray.length;j++) {
         if((((userInputArray[i].start).isBefore(givenDataArray[j].start)) && ((userInputArray[i].end).isBefore(givenDataArray[j].start))) || ((userInputArray[i].start).isAfter(givenDataArray[j].end)) && ((userInputArray[i].end).isAfter(givenDataArray[j].end))) {
            console.log('available')
         }
         else {
-             availableSlot='false';
+             availableSlot=false;
         }
       }
-      if(availableSlot == 'false') {
+      if(availableSlot == false) {
         isAvailableArray[i]=false;
         setSlotAvailable(isAvailableArray);
       }
